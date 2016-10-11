@@ -22,7 +22,7 @@ It will appear as a black text box
 
 The first command you'll need to run is `cd C:\Python27\Scripts` Where `C:\Python27` should be replaced with where you installed python
 
-Then you can run `pip install bs4 lxml pillow` which will install some packages needed to run the script.
+Then you can run `pip install bs4 pillow lxml==3.4.2` which will install some packages needed to run the script.
 
 Now you are ready to run the script. run `cd C:\MemeGen` where `C:\MemeGen` is where you extracted the code and font
 
@@ -32,7 +32,7 @@ Then run `C:\Python27\python.exe memeGen.py I got it working` where `I got it wo
 
 Your computer probably already has python istalled if not you can get it from the [python website](https://www.python.org/downloads/release/python-2712/) or your package manager.
 
-Once it is installed open the terminal and run `pip install bs4 lxml pillow`
+Once it is installed open the terminal and run `pip install bs4 pillow lxml==3.4.2`
 
 Then you can run `cd ~/MemeGen` Where `~/MemeGen` is where you extracted the code and font(`~` means your home directory)
 
