@@ -32,6 +32,8 @@ Then run `C:\Python27\python.exe memeGen.py I got it working` where `I got it wo
 
 Your computer probably already has python istalled if not you can get it from the [python website](https://www.python.org/downloads/release/python-2712/) or your package manager.
 
-Once it is installed open the terminal and run `cd ~/MemeGen` Where `~/MemeGen` is where you extracted the code and font(`~` means your home directory)
+Once it is installed open the terminal and run `pip install bs4 pillow`
+
+Then you can run `cd ~/MemeGen` Where `~/MemeGen` is where you extracted the code and font(`~` means your home directory)
 
 Now you can run the code with `python MemeGen.py I got it working` where `I got it working` is the text you'd like on the cards.
