@@ -1,9 +1,22 @@
+import os
 import sys
 import urllib
 from PIL import Image, ImageFont, ImageDraw
 from bs4 import BeautifulSoup
 
+alertBoxes = False
+try:
+    import Tkinter as tk
+    import tkMessageBox
+    alertBoxes = True
+except:
+    print("Alert boxes not supported on your setup")
+
 def create_meme(input_string):
+    exclusions = []
+    with open('exclude.cfg') as exclusionFile:
+        for exclude in exclusionFile:
+            exclusions.append(exclude.strip())
     curInd = 0
     curCount = 0
     totalX = 0
@@ -19,7 +32,7 @@ def create_meme(input_string):
         matchString = ''
         while curInd + totalChars < len(input_string):
             tMatchString = input_string[curInd:curInd+totalChars + 1]
-            rUrl = 'http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[' + input_string[curInd:curInd+totalChars + 1] + ']&format=+["Modern"]&block=+!["Innistrad"]+!["Shadows%20over%20Innistrad"]'
+            rUrl = 'http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[' + input_string[curInd:curInd+totalChars + 1] + ']'
             if input_string[curInd+totalChars] == ' ':
                 if totalChars == 0:
                     curInd += 1
@@ -34,10 +47,10 @@ def create_meme(input_string):
             elif input_string[curInd+totalChars] == '$' and totalChars == 0:
                 raise Exception("Couldn't find '"+ tMatchString[:-1] + "' at the end of a card name.\nThis can sometimes be fixed by adding a space before the last character")
             if input_string[curInd] == '^':
-                rUrl = 'http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/' + input_string[curInd:curInd+totalChars + 1] + '/]&format=+["Modern"]&block=+!["Innistrad"]+!["Shadows%20over%20Innistrad"]'
+                rUrl = 'http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/' + input_string[curInd:curInd+totalChars + 1] + '/]'
                 tMatchString = input_string[curInd + 1:curInd+totalChars + 1]
             if input_string[curInd+totalChars] == '$':
-                rUrl = 'http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/' + input_string[curInd:curInd+totalChars + 1] + '/]&format=+["Modern"]&block=+!["Innistrad"]+!["Shadows%20over%20Innistrad"]'
+                rUrl = 'http://gatherer.wizards.com/Pages/Search/Default.aspx?name=+[m/' + input_string[curInd:curInd+totalChars + 1] + '/]'
                 tMatchString = input_string[curInd:curInd+totalChars]
 
             req = urllib.urlopen(rUrl)
@@ -49,18 +62,16 @@ def create_meme(input_string):
                 for tCardItem in cardItems:
                     cardImage = tCardItem.find_all("img")[0]
                     name = cardImage["alt"]
-                    if name.find('//') >= 0:
+                    if name.find('//') >= 0 or name in exclusions:
                         continue
                     if input_string[curInd+totalChars] == '$':
                         if name.lower().rfind(tMatchString) >= 0:
-                            # print("Accepting " + name + " for " + tMatchString)
                             cardItem = tCardItem
                             matchString = tMatchString
                             totalChars += 1
                             break
                     else:
                         if name.lower().find(tMatchString) >= 0:
-                            # print("Accepting " + name + " for " + tMatchString)
                             cardItem = tCardItem
                             totalChars += 1
                             matchString = tMatchString
@@ -80,7 +91,6 @@ def create_meme(input_string):
         img = Image.open("Image" + str(curCount) + ".jpg")
         font = ImageFont.truetype("beleren-bold-webfont.ttf", img.size[1]/25)
         draw = ImageDraw.Draw(img)
-        # print "Matching " + matchString + " with " + name
         fChar = name.lower().index(matchString)
         if input_string[curInd+totalChars-1] == '$':
             fChar = name.lower().rindex(matchString)
@@ -105,7 +115,10 @@ def create_meme(input_string):
         curX += img.size[0]
 
     finalImage.save("Result.jpg")
-    print("Saved result to Result.jpg enjoy your memes")
+    print("Saved result to " + os.getcwd() + "/Result.jpg enjoy your memes")
+    root = tk.Tk()
+    root.withdraw()
+    tkMessageBox.showinfo("Finished Meme Generation", "Saved result to " + os.getcwd() + "/Result.jpg enjoy your memes")
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
